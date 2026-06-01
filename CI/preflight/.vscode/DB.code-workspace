@@ -1,0 +1,38 @@
+{
+	"folders": [
+		{
+			"name": "DB",
+			"path": "../../.."
+		}
+	],
+	"settings": {},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "register a new server",
+				"type": "shell",
+				"command": "powershell.exe",
+				"options": {
+					"cwd": "${workspaceFolder}",
+					"shell": {
+						"executable": "powershell.exe"
+					}
+				},
+				"args": [
+					"-NoProfile",
+					"-ExecutionPolicy",
+					"Bypass",
+					"-File",
+					"${workspaceFolder}\\CI\\preflight\\newServer\\newServer.ps1"
+				],
+				"problemMatcher": [],
+				"presentation": {
+					"reveal": "always",
+					"panel": "dedicated",
+					"clear": false
+				}
+			}
+		]
+	}
+}

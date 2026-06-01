@@ -1,0 +1,9 @@
+revoke all on DATABASE mapa_db from public;
+revoke all on SCHEMA public from public;
+revoke all on SCHEMA examinees from public;
+revoke all on SCHEMA dapar from public;
+revoke all on SCHEMA hn from public;
+revoke all on SCHEMA keshev from public;
+revoke all on SCHEMA mivdak from public;
+revoke all on SCHEMA pilots from public;
+revoke all on SCHEMA users from public;
