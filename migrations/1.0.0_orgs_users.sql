@@ -6,7 +6,6 @@ CREATE TABLE organizations (
   org_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   org_name VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
-  metadata JSONB DEFAULT '{}'::jsonb,
 
   CONSTRAINT org_name_not_empty CHECK (org_name != '')
 );
@@ -17,7 +16,7 @@ CREATE TABLE users (
   email VARCHAR(255) UNIQUE NOT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
 
-  CONSTRAINT email_format CHECK (email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$')
+  CONSTRAINT email_format CHECK (email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 );
 
 CREATE TABLE user_org_memberships (

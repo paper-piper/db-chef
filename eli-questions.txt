@@ -1,5 +1,6 @@
 id - counting or random?
 storing unknows fields (like dataset fields or datapoint data) - jsonb
+for the dataset versions view - it is not possible to set dynamic number of columns.
 
 TODO:
 datapoint trigger verification - follows the dataset version schema
