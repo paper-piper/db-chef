@@ -5,8 +5,8 @@ set -euo pipefail
 
 HOST="${PGHOST:-127.0.0.1}"
 PORT="${PGPORT:-6000}"
-DB="${PGDATABASE:-db-chef}"
-USER="${PGUSER:-db-chef}"
+DB="${PGDATABASE:-unv}"
+USER="${PGUSER:-postgres}"
 MIGRATIONS_DIR="$(dirname "$0")/migrations"
 
 # ─── Run ──────────────────────────────────────────────────────────────────────
@@ -15,7 +15,7 @@ echo "Connecting to $USER@$HOST:$PORT/$DB"
 echo "Running migrations from: $MIGRATIONS_DIR"
 echo
 
-files=$(ls "$MIGRATIONS_DIR"/*.sql 2>/dev/null | sort)
+files=$(ls "$MIGRATIONS_DIR"/*.sql 2>/dev/null | sort -V)
 
 if [[ -z "$files" ]]; then
   echo "No .sql files found in $MIGRATIONS_DIR"

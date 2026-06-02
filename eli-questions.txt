@@ -1,0 +1,5 @@
+id - counting or random?
+storing unknows fields (like dataset fields or datapoint data) - jsonb
+
+TODO:
+datapoint trigger verification - follows the dataset version schema
