@@ -1,0 +1,19 @@
+-- Drop existing tables (for clean slate - comment out if preserving data)
+DROP TABLE IF EXISTS audit_log CASCADE;
+DROP TABLE IF EXISTS run_output_artifacts CASCADE;
+DROP TABLE IF EXISTS run_logs CASCADE;
+DROP TABLE IF EXISTS runs CASCADE;
+DROP TABLE IF EXISTS compute_clusters CASCADE;
+DROP TABLE IF EXISTS experiment_parameters CASCADE;
+DROP TABLE IF EXISTS experiment_dataset_refs CASCADE;
+DROP TABLE IF EXISTS experiments CASCADE;
+DROP TABLE IF EXISTS dataset_data_points CASCADE;
+DROP TABLE IF EXISTS dataset_versions CASCADE;
+DROP TABLE IF EXISTS datasets CASCADE;
+DROP TABLE IF EXISTS user_role_assignments CASCADE;
+DROP TABLE IF EXISTS role_policy_assignments CASCADE;
+DROP TABLE IF EXISTS access_policies CASCADE;
+DROP TABLE IF EXISTS roles CASCADE;
+DROP TABLE IF EXISTS user_org_memberships CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS organizations CASCADE;
