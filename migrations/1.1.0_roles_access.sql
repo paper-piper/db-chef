@@ -6,7 +6,7 @@ CREATE TABLE orgs.roles (
   role_id    UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
   org_id     UUID         NOT NULL REFERENCES orgs.organizations(org_id) ON DELETE CASCADE,
   role_name  VARCHAR(255) NOT NULL,
-  created_at TIMESTAMPTZ    DEFAULT NOW(),
+  created_at TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
 
   UNIQUE (org_id, role_name),
   CONSTRAINT role_name_not_empty CHECK (role_name != '')

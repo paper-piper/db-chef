@@ -7,7 +7,7 @@ CREATE TABLE run.runs (
   experiment_id UUID        NOT NULL REFERENCES exp.experiments(experiment_id)    ON DELETE RESTRICT,
   cluster_id    UUID        NOT NULL REFERENCES run.compute_clusters(cluster_id)  ON DELETE RESTRICT,
   status        VARCHAR(50) NOT NULL DEFAULT 'queued',
-  created_at    TIMESTAMPTZ   DEFAULT NOW(),
+  created_at    TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
   started_at    TIMESTAMPTZ,
   ended_at      TIMESTAMPTZ,
   created_by    UUID        REFERENCES public.users(user_id) ON DELETE SET NULL,
@@ -28,7 +28,7 @@ CREATE TABLE run.run_logs (
   run_id      UUID        NOT NULL REFERENCES run.runs(run_id) ON DELETE CASCADE,
   log_message TEXT        NOT NULL,
   log_level   VARCHAR(20) DEFAULT 'INFO',
-  created_at  TIMESTAMPTZ   DEFAULT NOW(),
+  created_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
 
   CONSTRAINT log_level_valid       CHECK (log_level IN ('DEBUG', 'INFO', 'WARN', 'ERROR')),
   CONSTRAINT log_message_not_empty CHECK (log_message != '')
@@ -43,7 +43,7 @@ CREATE TABLE run.run_output_artifacts (
   run_id           UUID         NOT NULL UNIQUE REFERENCES run.runs(run_id) ON DELETE CASCADE,
   artifact_type    VARCHAR(100) NOT NULL,
   artifact_payload JSONB        NOT NULL,
-  created_at       TIMESTAMPTZ    DEFAULT NOW(),
+  created_at       TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
 
   CONSTRAINT artifact_type_not_empty    CHECK (artifact_type != ''),
   CONSTRAINT artifact_payload_not_empty CHECK (artifact_payload != '{}'::jsonb)

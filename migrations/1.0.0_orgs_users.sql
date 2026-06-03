@@ -6,7 +6,7 @@ CREATE TABLE public.users (
   user_id    UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
   name       VARCHAR(255) NOT NULL,
   email      VARCHAR(255) UNIQUE NOT NULL,
-  created_at TIMESTAMPTZ    DEFAULT NOW(),
+  created_at TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
 
   CONSTRAINT email_format CHECK (email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 );
@@ -14,7 +14,7 @@ CREATE TABLE public.users (
 CREATE TABLE orgs.organizations (
   org_id     UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
   org_name   VARCHAR(255) NOT NULL,
-  created_at TIMESTAMPTZ    DEFAULT NOW(),
+  created_at TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
 
   CONSTRAINT org_name_not_empty CHECK (org_name != '')
 );
