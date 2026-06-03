@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS run_logs CASCADE;
 DROP TABLE IF EXISTS runs CASCADE;
 DROP TABLE IF EXISTS compute_clusters CASCADE;
 DROP TABLE IF EXISTS experiment_parameters CASCADE;
-DROP TABLE IF EXISTS experiment_dataset_refs CASCADE;
+DROP TABLE IF EXISTS experiment_data_ver_refs CASCADE;
 DROP TABLE IF EXISTS experiments CASCADE;
 DROP TABLE IF EXISTS dataset_data_points CASCADE;
 DROP TABLE IF EXISTS dataset_versions CASCADE;

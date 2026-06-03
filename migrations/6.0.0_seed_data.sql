@@ -305,7 +305,7 @@ INSERT INTO experiments (experiment_id, org_id, experiment_name, created_by) VAL
 
 -- ─── Experiment → Dataset refs ────────────────────────────────────────────────
 
-INSERT INTO experiment_dataset_refs (experiment_id, dataset_version_id, ref_order) VALUES
+INSERT INTO experiment_data_ver_refs (experiment_id, dataset_version_id, ref_order) VALUES
   -- Baseline: churn v1 only
   ('11000001-0000-0000-0000-000000000000', 'ff000001-0000-0000-0000-000000000000', 1),
   -- NPS: churn v2 + clickstream v2

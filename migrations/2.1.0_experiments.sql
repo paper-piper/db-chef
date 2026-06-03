@@ -15,7 +15,7 @@ CREATE TABLE experiments (
 CREATE INDEX idx_experiments_org_id ON experiments(org_id);
 CREATE INDEX idx_experiments_created_by ON experiments(created_by);
 
-CREATE TABLE experiment_dataset_refs (
+CREATE TABLE experiment_data_ver_refs (
   experiment_id UUID NOT NULL REFERENCES experiments(experiment_id) ON DELETE CASCADE,
   dataset_version_id UUID NOT NULL REFERENCES dataset_versions(version_id) ON DELETE RESTRICT,
   ref_order INT NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE experiment_dataset_refs (
   CONSTRAINT ref_order_positive CHECK (ref_order > 0)
 );
 
-CREATE INDEX idx_experiment_dataset_refs_dataset_version_id ON experiment_dataset_refs(dataset_version_id);
+CREATE INDEX idx_experiment_data_ver_refs_dataset_version_id ON experiment_data_ver_refs(dataset_version_id);
 
 CREATE TABLE experiment_parameters (
   experiment_id UUID NOT NULL REFERENCES experiments(experiment_id) ON DELETE CASCADE,
