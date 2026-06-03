@@ -47,7 +47,7 @@ SELECT
   dv.version_number,
   edr.ref_order
 FROM experiments e
-LEFT JOIN experiment_data_ver_refs edr ON e.experiment_id = edr.experiment_id
+LEFT JOIN experiment_dataset_refs edr ON e.experiment_id = edr.experiment_id
 LEFT JOIN dataset_versions dv ON edr.dataset_version_id = dv.version_id
 LEFT JOIN datasets d ON dv.dataset_id = d.dataset_id
 ORDER BY e.experiment_id, edr.ref_order;

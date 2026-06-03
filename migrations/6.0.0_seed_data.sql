@@ -14,10 +14,10 @@
 
 -- ─── Organizations ────────────────────────────────────────────────────────────
 
-INSERT INTO organizations (org_id, org_name, metadata) VALUES
-  ('aa000001-0000-0000-0000-000000000000', 'Acme Research',     '{"plan": "enterprise", "region": "us-east"}'),
-  ('aa000002-0000-0000-0000-000000000000', 'Bright Labs',       '{"plan": "growth",     "region": "eu-west"}'),
-  ('aa000003-0000-0000-0000-000000000000', 'Quantum Analytics', '{"plan": "startup",    "region": "us-west"}');
+INSERT INTO organizations (org_id, org_name) VALUES
+  ('aa000001-0000-0000-0000-000000000000', 'Acme Research'),
+  ('aa000002-0000-0000-0000-000000000000', 'Bright Labs'),
+  ('aa000003-0000-0000-0000-000000000000', 'Quantum Analytics');
 
 
 -- ─── Users ───────────────────────────────────────────────────────────────────
