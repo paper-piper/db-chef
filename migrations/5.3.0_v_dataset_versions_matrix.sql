@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW v_dataset_versions_matrix AS
+CREATE OR REPLACE VIEW public.v_dataset_versions_matrix AS
 SELECT
   v.version_id,
   v.version_number,
@@ -6,6 +6,6 @@ SELECT
   d.dataset_key,
   d.org_id,
   v.lineage_chain::text AS parent_chain
-FROM v_dataset_lineage v
-INNER JOIN datasets d ON v.dataset_id = d.dataset_id
+FROM public.v_dataset_lineage v
+INNER JOIN ds.datasets d ON v.dataset_id = d.dataset_id
 ORDER BY d.dataset_key, v.version_number;

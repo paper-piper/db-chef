@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW v_dataset_lineage AS
+CREATE OR REPLACE VIEW public.v_dataset_lineage AS
 WITH RECURSIVE lineage AS (
   SELECT
     version_id,
@@ -6,7 +6,7 @@ WITH RECURSIVE lineage AS (
     version_number,
     parent_version_id,
     ARRAY[version_id] AS lineage_chain
-  FROM dataset_versions
+  FROM ds.dataset_versions
   WHERE parent_version_id IS NULL
 
   UNION ALL
@@ -17,7 +17,7 @@ WITH RECURSIVE lineage AS (
     dv.version_number,
     dv.parent_version_id,
     lineage.lineage_chain || ARRAY[dv.version_id]
-  FROM dataset_versions dv
+  FROM ds.dataset_versions dv
   INNER JOIN lineage ON dv.parent_version_id = lineage.version_id
 )
 SELECT

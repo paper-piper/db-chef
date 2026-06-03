@@ -5,7 +5,6 @@
 -- Interesting cases deliberately included:
 --   • Users belonging to multiple orgs     (Bob, Carol, Eve)
 --   • Users holding multiple roles         (Alice, Dave)
---   • Roles sharing the same policies      (Researcher + ML Engineer, Data Stewards)
 --   • Multi-dataset experiments            (exp 2, exp 3, exp 7)
 --   • Deep version lineage (3 levels)      (customer-churn-signals v1→v2→v3)
 --   • Mix of run statuses per experiment
@@ -14,7 +13,7 @@
 
 -- ─── Organizations ────────────────────────────────────────────────────────────
 
-INSERT INTO organizations (org_id, org_name) VALUES
+INSERT INTO orgs.organizations (org_id, org_name) VALUES
   ('aa000001-0000-0000-0000-000000000000', 'Acme Research'),
   ('aa000002-0000-0000-0000-000000000000', 'Bright Labs'),
   ('aa000003-0000-0000-0000-000000000000', 'Quantum Analytics');
@@ -22,19 +21,19 @@ INSERT INTO organizations (org_id, org_name) VALUES
 
 -- ─── Users ───────────────────────────────────────────────────────────────────
 
-INSERT INTO users (user_id, name, email) VALUES
+INSERT INTO public.users (user_id, name, email) VALUES
   ('bb000001-0000-0000-0000-000000000000', 'Alice Nakamura', 'alice@acme.io'),        -- Acme: Admin + Researcher (multi-role)
   ('bb000002-0000-0000-0000-000000000000', 'Bob Chen',       'bob@acme.io'),          -- Acme + Quantum (multi-org)
   ('bb000003-0000-0000-0000-000000000000', 'Carol Osei',     'carol@brightlabs.io'),  -- Bright + Quantum (multi-org)
   ('bb000004-0000-0000-0000-000000000000', 'Dave Singh',     'dave@brightlabs.io'),   -- Bright: Admin + Analyst (multi-role)
   ('bb000005-0000-0000-0000-000000000000', 'Eve Martinez',   'eve@consultant.io'),    -- Acme + Bright (consultant, multi-org)
   ('bb000006-0000-0000-0000-000000000000', 'Frank Liu',      'frank@quantum.io'),     -- Quantum only
-  ('bb000007-0000-0000-0000-000000000000', 'Grace Kim',      'grace@brightlabs.io');  -- Bright only
+  ('bb000007-0000-0000-0000-000000000000', 'Grace Kim',      'grace@brightlabs.io'); -- Bright only
 
 
 -- ─── Memberships  (multi-org users: Bob, Carol, Eve) ─────────────────────────
 
-INSERT INTO user_org_memberships (user_id, org_id) VALUES
+INSERT INTO orgs.user_org_memberships (user_id, org_id) VALUES
   ('bb000001-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000'), -- Alice  → Acme
   ('bb000002-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000'), -- Bob    → Acme
   ('bb000002-0000-0000-0000-000000000000', 'aa000003-0000-0000-0000-000000000000'), -- Bob    → Quantum
@@ -49,7 +48,7 @@ INSERT INTO user_org_memberships (user_id, org_id) VALUES
 
 -- ─── Roles ───────────────────────────────────────────────────────────────────
 
-INSERT INTO roles (role_id, org_id, role_name) VALUES
+INSERT INTO orgs.roles (role_id, org_id, role_name) VALUES
   -- Acme
   ('cc000001-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000', 'Acme Admin'),
   ('cc000002-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000', 'Acme Researcher'),
@@ -64,55 +63,9 @@ INSERT INTO roles (role_id, org_id, role_name) VALUES
   ('cc000009-0000-0000-0000-000000000000', 'aa000003-0000-0000-0000-000000000000', 'Quantum Auditor');
 
 
--- ─── Role → Policy assignments ────────────────────────────────────────────────
--- Shared policies across roles (interesting cases marked):
---   experiment_runner  →  Acme Researcher, Acme Admin, Bright Admin, Quantum ML Engineer, Quantum Admin
---   dataset_editor     →  Acme Researcher, Acme Admin, Acme Data Steward, Bright Admin,
---                         Bright Data Steward, Quantum ML Engineer, Quantum Admin
---   analytics_team     →  Acme Data Steward, Bright Analyst, Bright Data Steward, Quantum Auditor, Quantum Admin
-
-INSERT INTO role_policy_assignments (role_id, policy_id)
-SELECT r.role_id, p.policy_id
-FROM (VALUES
-  -- Acme Admin: all four policies
-  ('cc000001-0000-0000-0000-000000000000', 'admin'),
-  ('cc000001-0000-0000-0000-000000000000', 'dataset_editor'),
-  ('cc000001-0000-0000-0000-000000000000', 'experiment_runner'),
-  ('cc000001-0000-0000-0000-000000000000', 'analytics_team'),
-  -- Acme Researcher: run experiments, edit datasets  (shares both with Quantum ML Engineer)
-  ('cc000002-0000-0000-0000-000000000000', 'experiment_runner'),
-  ('cc000002-0000-0000-0000-000000000000', 'dataset_editor'),
-  -- Acme Data Steward: edit datasets, view analytics  (shares dataset_editor with 5 other roles)
-  ('cc000003-0000-0000-0000-000000000000', 'dataset_editor'),
-  ('cc000003-0000-0000-0000-000000000000', 'analytics_team'),
-  -- Bright Admin: all four
-  ('cc000004-0000-0000-0000-000000000000', 'admin'),
-  ('cc000004-0000-0000-0000-000000000000', 'dataset_editor'),
-  ('cc000004-0000-0000-0000-000000000000', 'experiment_runner'),
-  ('cc000004-0000-0000-0000-000000000000', 'analytics_team'),
-  -- Bright Analyst: read-only analytics
-  ('cc000005-0000-0000-0000-000000000000', 'analytics_team'),
-  -- Bright Data Steward: dataset editing + analytics  (same policy set as Acme Data Steward)
-  ('cc000006-0000-0000-0000-000000000000', 'dataset_editor'),
-  ('cc000006-0000-0000-0000-000000000000', 'analytics_team'),
-  -- Quantum Admin: all four
-  ('cc000007-0000-0000-0000-000000000000', 'admin'),
-  ('cc000007-0000-0000-0000-000000000000', 'dataset_editor'),
-  ('cc000007-0000-0000-0000-000000000000', 'experiment_runner'),
-  ('cc000007-0000-0000-0000-000000000000', 'analytics_team'),
-  -- Quantum ML Engineer: same as Acme Researcher (cross-org policy mirror)
-  ('cc000008-0000-0000-0000-000000000000', 'experiment_runner'),
-  ('cc000008-0000-0000-0000-000000000000', 'dataset_editor'),
-  -- Quantum Auditor: read-only analytics
-  ('cc000009-0000-0000-0000-000000000000', 'analytics_team')
-) AS t(role_id, policy_name)
-JOIN roles r           ON r.role_id    = t.role_id::UUID
-JOIN access_policies p ON p.policy_name = t.policy_name;
-
-
 -- ─── User → Role assignments  (multi-role users: Alice, Dave) ─────────────────
 
-INSERT INTO user_role_assignments (user_id, role_id, org_id) VALUES
+INSERT INTO orgs.user_role_assignments (user_id, role_id, org_id) VALUES
   -- Alice: Admin AND Researcher at Acme (two roles, same org)
   ('bb000001-0000-0000-0000-000000000000', 'cc000001-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000'),
   ('bb000001-0000-0000-0000-000000000000', 'cc000002-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000'),
@@ -136,7 +89,7 @@ INSERT INTO user_role_assignments (user_id, role_id, org_id) VALUES
 
 -- ─── Compute Clusters ─────────────────────────────────────────────────────────
 
-INSERT INTO compute_clusters (cluster_id, cluster_name, region, ip_address, cpu_cores, ram_gb, disk_tb, network_bandwidth_mbps, is_active) VALUES
+INSERT INTO run.compute_clusters (cluster_id, cluster_name, region, ip_address, cpu_cores, ram_gb, disk_tb, network_bandwidth_mbps, is_active) VALUES
   ('dd000001-0000-0000-0000-000000000000', 'us-east-gpu-01',  'us-east-1', '10.0.1.10',  64,   512, 20.00, 10000, TRUE),
   ('dd000002-0000-0000-0000-000000000000', 'us-east-cpu-02',  'us-east-1', '10.0.1.11',  32,   128,  5.00,  1000, TRUE),
   ('dd000003-0000-0000-0000-000000000000', 'eu-west-gpu-01',  'eu-west-1', '10.1.1.10',  96,  1024, 50.00, 25000, TRUE),
@@ -146,7 +99,7 @@ INSERT INTO compute_clusters (cluster_id, cluster_name, region, ip_address, cpu_
 
 -- ─── Datasets ─────────────────────────────────────────────────────────────────
 
-INSERT INTO datasets (dataset_id, org_id, dataset_key, created_by) VALUES
+INSERT INTO ds.datasets (dataset_id, org_id, dataset_key, created_by) VALUES
   -- Acme
   ('ee000001-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000', 'customer-churn-signals',          'bb000001-0000-0000-0000-000000000000'),
   ('ee000002-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000', 'product-clickstream',             'bb000002-0000-0000-0000-000000000000'),
@@ -163,7 +116,7 @@ INSERT INTO datasets (dataset_id, org_id, dataset_key, created_by) VALUES
 -- ─── Dataset Versions ─────────────────────────────────────────────────────────
 -- customer-churn-signals: 3-level deep lineage (v1 → v2 → v3)
 
-INSERT INTO dataset_versions (version_id, dataset_id, version_number, description, schema_definition, parent_version_id, created_by) VALUES
+INSERT INTO ds.dataset_versions (version_id, dataset_id, version_number, description, schema_definition, parent_version_id, created_by) VALUES
 
   -- customer-churn-signals v1 (root)
   ('ff000001-0000-0000-0000-000000000000', 'ee000001-0000-0000-0000-000000000000', 1,
@@ -240,7 +193,7 @@ INSERT INTO dataset_versions (version_id, dataset_id, version_number, descriptio
 
 -- ─── Dataset Data Points ──────────────────────────────────────────────────────
 
-INSERT INTO dataset_data_points (version_id, data_payload, created_by) VALUES
+INSERT INTO ds.dataset_data_points (version_id, data_payload, created_by) VALUES
   -- churn v1
   ('ff000001-0000-0000-0000-000000000000', '{"customer_id": "c-001", "churn_label": true,  "tenure_days": 45}',  'bb000001-0000-0000-0000-000000000000'),
   ('ff000001-0000-0000-0000-000000000000', '{"customer_id": "c-002", "churn_label": false, "tenure_days": 320}', 'bb000001-0000-0000-0000-000000000000'),
@@ -289,7 +242,7 @@ INSERT INTO dataset_data_points (version_id, data_payload, created_by) VALUES
 
 -- ─── Experiments ──────────────────────────────────────────────────────────────
 
-INSERT INTO experiments (experiment_id, org_id, experiment_name, created_by) VALUES
+INSERT INTO exp.experiments (experiment_id, org_id, experiment_name, created_by) VALUES
   -- Acme
   ('11000001-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000', 'Churn XGBoost Baseline',             'bb000001-0000-0000-0000-000000000000'),
   ('11000002-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000', 'Churn XGBoost + NPS Feature',        'bb000002-0000-0000-0000-000000000000'),
@@ -305,7 +258,7 @@ INSERT INTO experiments (experiment_id, org_id, experiment_name, created_by) VAL
 
 -- ─── Experiment → Dataset refs ────────────────────────────────────────────────
 
-INSERT INTO experiment_data_ver_refs (experiment_id, dataset_version_id, ref_order) VALUES
+INSERT INTO exp.experiment_data_ver_refs (experiment_id, dataset_version_id, ref_order) VALUES
   -- Baseline: churn v1 only
   ('11000001-0000-0000-0000-000000000000', 'ff000001-0000-0000-0000-000000000000', 1),
   -- NPS: churn v2 + clickstream v2
@@ -329,7 +282,7 @@ INSERT INTO experiment_data_ver_refs (experiment_id, dataset_version_id, ref_ord
 
 -- ─── Experiment Parameters ────────────────────────────────────────────────────
 
-INSERT INTO experiment_parameters (experiment_id, param_key, param_type, param_value) VALUES
+INSERT INTO exp.experiment_parameters (experiment_id, param_key, param_type, param_value) VALUES
   ('11000001-0000-0000-0000-000000000000', 'n_estimators',          'int',    '100'),
   ('11000001-0000-0000-0000-000000000000', 'max_depth',             'int',    '6'),
   ('11000001-0000-0000-0000-000000000000', 'learning_rate',         'float',  '0.1'),
@@ -374,7 +327,7 @@ INSERT INTO experiment_parameters (experiment_id, param_key, param_type, param_v
 
 -- ─── Runs ─────────────────────────────────────────────────────────────────────
 
-INSERT INTO runs (run_id, experiment_id, cluster_id, status, created_at, started_at, ended_at, created_by) VALUES
+INSERT INTO run.runs (run_id, experiment_id, cluster_id, status, created_at, started_at, ended_at, created_by) VALUES
   -- Churn Baseline: succeeded
   ('22000001-0000-0000-0000-000000000000', '11000001-0000-0000-0000-000000000000', 'dd000001-0000-0000-0000-000000000000',
    'succeeded', '2025-04-01 08:00:00', '2025-04-01 08:01:00', '2025-04-01 08:47:00', 'bb000001-0000-0000-0000-000000000000'),
@@ -420,7 +373,7 @@ INSERT INTO runs (run_id, experiment_id, cluster_id, status, created_at, started
 
 -- ─── Run Logs ─────────────────────────────────────────────────────────────────
 
-INSERT INTO run_logs (run_id, log_level, log_message, created_at) VALUES
+INSERT INTO run.run_logs (run_id, log_level, log_message, created_at) VALUES
   ('22000001-0000-0000-0000-000000000000', 'INFO',  'Loading customer-churn-signals v1 (4 rows)',                      '2025-04-01 08:01:05'),
   ('22000001-0000-0000-0000-000000000000', 'INFO',  'Training XGBoost: n_estimators=100, max_depth=6',                '2025-04-01 08:02:00'),
   ('22000001-0000-0000-0000-000000000000', 'INFO',  'Training complete. AUC-ROC: 0.82',                               '2025-04-01 08:47:00'),
@@ -470,7 +423,7 @@ INSERT INTO run_logs (run_id, log_level, log_message, created_at) VALUES
 
 -- ─── Run Output Artifacts ─────────────────────────────────────────────────────
 
-INSERT INTO run_output_artifacts (run_id, artifact_type, artifact_payload) VALUES
+INSERT INTO run.run_output_artifacts (run_id, artifact_type, artifact_payload) VALUES
   ('22000001-0000-0000-0000-000000000000', 'model_metrics', '{
     "auc_roc": 0.82, "precision": 0.74, "recall": 0.68, "f1": 0.71,
     "model_path": "s3://acme-models/churn-xgb-baseline/model.ubj"

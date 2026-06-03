@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW v_run_environment AS
+CREATE OR REPLACE VIEW public.v_run_environment AS
 SELECT
   r.run_id,
   r.experiment_id,
@@ -15,7 +15,7 @@ SELECT
   r.started_at,
   r.ended_at,
   EXTRACT(EPOCH FROM (r.ended_at - r.started_at)) AS execution_seconds
-FROM runs r
-INNER JOIN experiments e ON r.experiment_id = e.experiment_id
-INNER JOIN compute_clusters cc ON r.cluster_id = cc.cluster_id
+FROM run.runs r
+INNER JOIN exp.experiments       e  ON r.experiment_id = e.experiment_id
+INNER JOIN run.compute_clusters  cc ON r.cluster_id    = cc.cluster_id
 ORDER BY r.created_at DESC;
