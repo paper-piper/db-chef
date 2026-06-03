@@ -11,7 +11,7 @@ CREATE TABLE run.compute_clusters (
   ram_gb                  INT            NOT NULL,
   disk_tb                 DECIMAL(10, 2) NOT NULL,
   network_bandwidth_mbps  INT            NOT NULL,
-  created_at              TIMESTAMP      DEFAULT NOW(),
+  created_at              TIMESTAMPTZ      DEFAULT NOW(),
   is_active               BOOLEAN        DEFAULT TRUE,
 
   CONSTRAINT cluster_name_not_empty    CHECK (cluster_name != ''),

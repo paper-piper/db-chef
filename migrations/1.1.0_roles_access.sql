@@ -6,7 +6,7 @@ CREATE TABLE orgs.roles (
   role_id    UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
   org_id     UUID         NOT NULL REFERENCES orgs.organizations(org_id) ON DELETE CASCADE,
   role_name  VARCHAR(255) NOT NULL,
-  created_at TIMESTAMP    DEFAULT NOW(),
+  created_at TIMESTAMPTZ    DEFAULT NOW(),
 
   UNIQUE (org_id, role_name),
   CONSTRAINT role_name_not_empty CHECK (role_name != '')
@@ -18,7 +18,7 @@ CREATE TABLE orgs.user_role_assignments (
   user_id     UUID      NOT NULL REFERENCES public.users(user_id)          ON DELETE CASCADE,
   role_id     UUID      NOT NULL REFERENCES orgs.roles(role_id)            ON DELETE CASCADE,
   org_id      UUID      NOT NULL REFERENCES orgs.organizations(org_id)     ON DELETE CASCADE,
-  assigned_at TIMESTAMP DEFAULT NOW(),
+  assigned_at TIMESTAMPTZ DEFAULT NOW(),
 
   -- org/role consistency is enforced via trigger, not a CHECK constraint
   PRIMARY KEY (user_id, role_id, org_id)

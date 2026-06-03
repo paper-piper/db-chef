@@ -6,7 +6,7 @@ CREATE TABLE ds.datasets (
   dataset_id  UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
   org_id      UUID         NOT NULL REFERENCES orgs.organizations(org_id) ON DELETE CASCADE,
   dataset_key VARCHAR(255) NOT NULL,
-  created_at  TIMESTAMP    DEFAULT NOW(),
+  created_at  TIMESTAMPTZ    DEFAULT NOW(),
   created_by  UUID         REFERENCES public.users(user_id) ON DELETE SET NULL,
 
   UNIQUE (org_id, dataset_key),
@@ -23,7 +23,7 @@ CREATE TABLE ds.dataset_versions (
   description       TEXT,
   schema_definition JSONB   NOT NULL,
   parent_version_id UUID    REFERENCES ds.dataset_versions(version_id)              ON DELETE SET NULL,
-  created_at        TIMESTAMP DEFAULT NOW(),
+  created_at        TIMESTAMPTZ DEFAULT NOW(),
   created_by        UUID    REFERENCES public.users(user_id)                        ON DELETE SET NULL,
 
   UNIQUE (dataset_id, version_number),
@@ -39,7 +39,7 @@ CREATE TABLE ds.dataset_data_points (
   data_point_id UUID  PRIMARY KEY DEFAULT gen_random_uuid(),
   version_id    UUID  NOT NULL REFERENCES ds.dataset_versions(version_id) ON DELETE RESTRICT,
   data_payload  JSONB NOT NULL,
-  created_at    TIMESTAMP DEFAULT NOW(),
+  created_at    TIMESTAMPTZ DEFAULT NOW(),
   created_by    UUID  REFERENCES public.users(user_id) ON DELETE SET NULL,
 
   CONSTRAINT data_payload_not_empty CHECK (data_payload != '{}'::jsonb)

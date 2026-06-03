@@ -6,7 +6,7 @@ CREATE TABLE exp.experiments (
   experiment_id   UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
   org_id          UUID         NOT NULL REFERENCES orgs.organizations(org_id) ON DELETE CASCADE,
   experiment_name VARCHAR(255) NOT NULL,
-  created_at      TIMESTAMP    DEFAULT NOW(),
+  created_at      TIMESTAMPTZ    DEFAULT NOW(),
   created_by      UUID         REFERENCES public.users(user_id) ON DELETE SET NULL,
 
   CONSTRAINT experiment_name_not_empty CHECK (experiment_name != '')

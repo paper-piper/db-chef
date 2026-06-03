@@ -10,7 +10,7 @@ CREATE TABLE public.audit_log (
   old_values  JSONB,
   new_values  JSONB,
   changed_by  UUID         REFERENCES public.users(user_id) ON DELETE SET NULL,
-  changed_at  TIMESTAMP    DEFAULT NOW(),
+  changed_at  TIMESTAMPTZ    DEFAULT NOW(),
 
   CONSTRAINT entity_type_valid CHECK (entity_type IN ('dataset', 'dataset_version', 'experiment', 'run', 'permission')),
   CONSTRAINT operation_valid   CHECK (operation IN ('INSERT', 'UPDATE', 'DELETE')),
