@@ -39,7 +39,7 @@ CREATE OR REPLACE FUNCTION public.fn_audit_log()
 RETURNS TRIGGER
 LANGUAGE plpgsql AS $$
 DECLARE
-  v_entity_type VARCHAR(100) := TG_ARGV[0];
+  v_entity_type public.audit_entity_type := TG_ARGV[0]::public.audit_entity_type;
   v_pk_column   TEXT         := TG_ARGV[1];
   v_entity_id   UUID;
   v_old_values  JSONB;
@@ -72,7 +72,7 @@ BEGIN
   INSERT INTO public.audit_log
     (entity_type, entity_id, operation, old_values, new_values, changed_by)
   VALUES
-    (v_entity_type, v_entity_id, TG_OP, v_old_values, v_new_values, v_changed_by);
+    (v_entity_type, v_entity_id, TG_OP::public.audit_operation, v_old_values, v_new_values, v_changed_by);
 
   RETURN NULL; -- AFTER trigger; return value is ignored
 END;
