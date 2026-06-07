@@ -1,36 +1,27 @@
 -- ============================================================================
--- LEGACY CLEANUP — tables that existed in public before schemas were introduced.
--- These drops are no-ops on a fresh database; they only matter when migrating
--- an old single-schema installation.  CASCADE handles FK ordering.
+-- FULL DATABASE RESET
+-- Dynamically discovers and drops everything in all non-system schemas,
+-- then nukes and recreates the public schema. Nothing gets left behind
+-- regardless of what was added or renamed since the last run.
 -- ============================================================================
-DROP TABLE IF EXISTS public.run_output_artifacts  CASCADE;
-DROP TABLE IF EXISTS public.run_logs              CASCADE;
-DROP TABLE IF EXISTS public.runs                  CASCADE;
-DROP TABLE IF EXISTS public.compute_clusters      CASCADE;
-DROP TABLE IF EXISTS public.experiment_parameters CASCADE;
-DROP TABLE IF EXISTS public.experiment_data_ver_refs CASCADE;
-DROP TABLE IF EXISTS public.experiments           CASCADE;
-DROP TABLE IF EXISTS public.dataset_data_points   CASCADE;
-DROP TABLE IF EXISTS public.dataset_versions      CASCADE;
-DROP TABLE IF EXISTS public.datasets              CASCADE;
-DROP TABLE IF EXISTS public.user_role_assignments CASCADE;
-DROP TABLE IF EXISTS public.roles                 CASCADE;
-DROP TABLE IF EXISTS public.user_org_memberships  CASCADE;
-DROP TABLE IF EXISTS public.organizations         CASCADE;
 
--- ============================================================================
--- CURRENT SCHEMA CLEANUP — drops all four non-public schemas and everything in them.
--- CASCADE drops all tables, views, indexes, and sequences within each schema.
--- ============================================================================
-DROP SCHEMA IF EXISTS run  CASCADE;
-DROP SCHEMA IF EXISTS exp  CASCADE;
-DROP SCHEMA IF EXISTS ds   CASCADE;
-DROP SCHEMA IF EXISTS orgs CASCADE;
+DO $$
+DECLARE
+  r RECORD;
+BEGIN
+  -- Drop every non-system schema (covers orgs, ds, exp, run, and any future ones)
+  FOR r IN
+    SELECT schema_name
+    FROM information_schema.schemata
+    WHERE schema_name NOT IN ('public', 'information_schema')
+      AND schema_name NOT LIKE 'pg_%'
+  LOOP
+    EXECUTE 'DROP SCHEMA IF EXISTS ' || quote_ident(r.schema_name) || ' CASCADE';
+  END LOOP;
+END;
+$$;
 
--- public-schema tables dropped individually (public schema itself is never dropped)
-DROP TABLE IF EXISTS public.audit_log CASCADE;
-DROP TABLE IF EXISTS public.users     CASCADE;
-
--- Functions live in public
-DROP FUNCTION IF EXISTS public.fn_append_only CASCADE;
-DROP FUNCTION IF EXISTS public.fn_audit_log   CASCADE;
+-- Drop and recreate public — wipes all tables, views, functions, types,
+-- sequences, and triggers in one shot, no matter what names they have.
+DROP SCHEMA IF EXISTS public CASCADE;
+CREATE SCHEMA public;

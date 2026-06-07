@@ -8,8 +8,9 @@ CREATE TYPE run.log_level  AS ENUM ('DEBUG', 'INFO', 'WARN', 'ERROR');
 CREATE TABLE run.runs (
   run_id        UUID           PRIMARY KEY DEFAULT gen_random_uuid(),
   experiment_id UUID           NOT NULL REFERENCES exp.experiments(experiment_id)    ON DELETE RESTRICT,
-  cluster_id    UUID           NOT NULL REFERENCES run.compute_clusters(cluster_id)  ON DELETE RESTRICT,
-  status        run.run_status NOT NULL DEFAULT 'queued',
+  cluster_id         UUID           NOT NULL REFERENCES run.compute_clusters(cluster_id)  ON DELETE RESTRICT,
+  dataset_version_id UUID           NOT NULL REFERENCES ds.dataset_versions(version_id)   ON DELETE RESTRICT,
+  status             run.run_status NOT NULL DEFAULT 'queued',
   created_at    TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
   started_at    TIMESTAMPTZ,
   ended_at      TIMESTAMPTZ,
