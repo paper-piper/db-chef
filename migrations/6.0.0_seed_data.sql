@@ -121,73 +121,73 @@ INSERT INTO ds.dataset_versions (version_id, dataset_id, version_number, descrip
   -- customer-churn-signals v1 (root)
   ('ff000001-0000-0000-0000-000000000000', 'ee000001-0000-0000-0000-000000000000', 1,
    'Initial CRM export',
-   '{"fields": [{"name": "customer_id", "type": "uuid"}, {"name": "churn_label", "type": "bool"}, {"name": "tenure_days", "type": "int"}]}',
+   '{"customer_id": "string", "churn_label": "boolean", "tenure_days": "number"}',
    NULL, 'bb000001-0000-0000-0000-000000000000'),
 
   -- customer-churn-signals v2 (child of v1)
   ('ff000002-0000-0000-0000-000000000000', 'ee000001-0000-0000-0000-000000000000', 2,
    'Added NPS score feature',
-   '{"fields": [{"name": "customer_id", "type": "uuid"}, {"name": "churn_label", "type": "bool"}, {"name": "tenure_days", "type": "int"}, {"name": "nps_score", "type": "float"}]}',
+   '{"customer_id": "string", "churn_label": "boolean", "tenure_days": "number", "nps_score": "number"}',
    'ff000001-0000-0000-0000-000000000000', 'bb000002-0000-0000-0000-000000000000'),
 
   -- customer-churn-signals v3 (child of v2 — 3 levels deep)
   ('ff000003-0000-0000-0000-000000000000', 'ee000001-0000-0000-0000-000000000000', 3,
    'Added support tier and contract value; dropped raw tenure',
-   '{"fields": [{"name": "customer_id", "type": "uuid"}, {"name": "churn_label", "type": "bool"}, {"name": "nps_score", "type": "float"}, {"name": "support_tier", "type": "string"}, {"name": "contract_value_usd", "type": "float"}]}',
+   '{"customer_id": "string", "churn_label": "boolean", "nps_score": "number", "support_tier": "string", "contract_value_usd": "number"}',
    'ff000002-0000-0000-0000-000000000000', 'bb000001-0000-0000-0000-000000000000'),
 
   -- product-clickstream v1
   ('ff000004-0000-0000-0000-000000000000', 'ee000002-0000-0000-0000-000000000000', 1,
    'Raw web event stream',
-   '{"fields": [{"name": "session_id", "type": "uuid"}, {"name": "event_type", "type": "string"}, {"name": "page", "type": "string"}, {"name": "ts", "type": "timestamp"}]}',
+   '{"session_id": "string", "event_type": "string", "page": "string", "ts": "string"}',
    NULL, 'bb000002-0000-0000-0000-000000000000'),
 
   -- product-clickstream v2
   ('ff000005-0000-0000-0000-000000000000', 'ee000002-0000-0000-0000-000000000000', 2,
    'Nulls filtered, bot sessions removed',
-   '{"fields": [{"name": "session_id", "type": "uuid"}, {"name": "event_type", "type": "string"}, {"name": "page", "type": "string"}, {"name": "ts", "type": "timestamp"}, {"name": "user_agent_clean", "type": "string"}]}',
+   '{"session_id": "string", "event_type": "string", "page": "string", "ts": "string", "user_agent_clean": "string"}',
    'ff000004-0000-0000-0000-000000000000', 'bb000002-0000-0000-0000-000000000000'),
 
   -- marketing-attribution v1
   ('ff000006-0000-0000-0000-000000000000', 'ee000003-0000-0000-0000-000000000000', 1,
    'Multi-touch attribution export from ad platform',
-   '{"fields": [{"name": "customer_id", "type": "uuid"}, {"name": "channel", "type": "string"}, {"name": "touchpoint_ts", "type": "timestamp"}, {"name": "attributed_revenue", "type": "float"}]}',
+   '{"customer_id": "string", "channel": "string", "touchpoint_ts": "string", "attributed_revenue": "number"}',
    NULL, 'bb000005-0000-0000-0000-000000000000'),
 
   -- sensor-telemetry-raw v1
   ('ff000007-0000-0000-0000-000000000000', 'ee000004-0000-0000-0000-000000000000', 1,
    'Direct IoT feed, no cleaning',
-   '{"fields": [{"name": "device_id", "type": "string"}, {"name": "temp_c", "type": "float"}, {"name": "pressure_pa", "type": "float"}, {"name": "recorded_at", "type": "timestamp"}]}',
+   '{"device_id": "string", "temp_c": "number", "pressure_pa": "number", "recorded_at": "string"}',
    NULL, 'bb000003-0000-0000-0000-000000000000'),
 
   -- sensor-telemetry-clean v1
   ('ff000008-0000-0000-0000-000000000000', 'ee000005-0000-0000-0000-000000000000', 1,
    'Outliers removed, nulls imputed',
-   '{"fields": [{"name": "device_id", "type": "string"}, {"name": "temp_c", "type": "float"}, {"name": "pressure_pa", "type": "float"}, {"name": "recorded_at", "type": "timestamp"}]}',
+   '{"device_id": "string", "temp_c": "number", "pressure_pa": "number", "recorded_at": "string"}',
    NULL, 'bb000003-0000-0000-0000-000000000000'),
 
   -- sensor-telemetry-clean v2
   ('ff000009-0000-0000-0000-000000000000', 'ee000005-0000-0000-0000-000000000000', 2,
    'Added humidity sensor; resampled to 1-min intervals',
-   '{"fields": [{"name": "device_id", "type": "string"}, {"name": "temp_c", "type": "float"}, {"name": "pressure_pa", "type": "float"}, {"name": "humidity_pct", "type": "float"}, {"name": "recorded_at", "type": "timestamp"}]}',
+   '{"device_id": "string", "temp_c": "number", "pressure_pa": "number", "humidity_pct": "number", "recorded_at": "string"}',
    'ff000008-0000-0000-0000-000000000000', 'bb000004-0000-0000-0000-000000000000'),
 
   -- weather-forecast-features v1
   ('ff000010-0000-0000-0000-000000000000', 'ee000006-0000-0000-0000-000000000000', 1,
    'ECMWF forecast features, 48-h horizon',
-   '{"fields": [{"name": "location_id", "type": "string"}, {"name": "forecast_ts", "type": "timestamp"}, {"name": "temp_c", "type": "float"}, {"name": "wind_kmh", "type": "float"}, {"name": "precip_mm", "type": "float"}]}',
+   '{"location_id": "string", "forecast_ts": "string", "temp_c": "number", "wind_kmh": "number", "precip_mm": "number"}',
    NULL, 'bb000004-0000-0000-0000-000000000000'),
 
   -- financial-transactions-raw v1
   ('ff000011-0000-0000-0000-000000000000', 'ee000007-0000-0000-0000-000000000000', 1,
    'Raw ledger export from core banking',
-   '{"fields": [{"name": "txn_id", "type": "uuid"}, {"name": "account_id", "type": "string"}, {"name": "amount_usd", "type": "float"}, {"name": "merchant_code", "type": "string"}, {"name": "txn_ts", "type": "timestamp"}]}',
+   '{"txn_id": "string", "account_id": "string", "amount_usd": "number", "merchant_code": "string", "txn_ts": "string"}',
    NULL, 'bb000006-0000-0000-0000-000000000000'),
 
   -- financial-transactions-enriched v1
   ('ff000012-0000-0000-0000-000000000000', 'ee000008-0000-0000-0000-000000000000', 1,
    'Joined with merchant lookup; fraud labels from ops team',
-   '{"fields": [{"name": "txn_id", "type": "uuid"}, {"name": "account_id", "type": "string"}, {"name": "amount_usd", "type": "float"}, {"name": "merchant_name", "type": "string"}, {"name": "merchant_category", "type": "string"}, {"name": "is_fraud", "type": "bool"}, {"name": "txn_ts", "type": "timestamp"}]}',
+   '{"txn_id": "string", "account_id": "string", "amount_usd": "number", "merchant_name": "string", "merchant_category": "string", "is_fraud": "boolean", "txn_ts": "string"}',
    NULL, 'bb000003-0000-0000-0000-000000000000'); -- Carol again (multi-org contributor)
 
 

@@ -26,14 +26,15 @@ CREATE TABLE exp.experiment_data_ver_refs (
 
 CREATE INDEX idx_experiment_data_ver_refs_dataset_version_id ON exp.experiment_data_ver_refs(dataset_version_id);
 
+CREATE TYPE exp.param_type AS ENUM ('int', 'string', 'float', 'boolean', 'json');
+
 CREATE TABLE exp.experiment_parameters (
-  experiment_id UUID         NOT NULL REFERENCES exp.experiments(experiment_id) ON DELETE CASCADE,
-  param_key     VARCHAR(255) NOT NULL,
-  param_type    VARCHAR(50)  NOT NULL,
-  param_value   JSONB        NOT NULL,
+  experiment_id UUID            NOT NULL REFERENCES exp.experiments(experiment_id) ON DELETE CASCADE,
+  param_key     VARCHAR(255)    NOT NULL,
+  param_type    exp.param_type  NOT NULL,
+  param_value   JSONB           NOT NULL,
 
   PRIMARY KEY (experiment_id, param_key),
-  CONSTRAINT param_type_valid    CHECK (param_type IN ('int', 'string', 'float', 'boolean', 'json')),
   CONSTRAINT param_key_not_empty CHECK (param_key != '')
 );
 

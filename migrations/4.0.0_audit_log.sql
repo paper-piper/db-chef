@@ -2,18 +2,19 @@
 -- SECTION G: AUDIT LOG (Tamper-Evident)
 -- ============================================================================
 
+CREATE TYPE public.audit_entity_type AS ENUM ('dataset', 'dataset_version', 'experiment', 'run', 'permission');
+CREATE TYPE public.audit_operation   AS ENUM ('INSERT', 'UPDATE', 'DELETE');
+
 CREATE TABLE public.audit_log (
-  audit_id   BIGSERIAL    PRIMARY KEY,
-  entity_type VARCHAR(100) NOT NULL,
-  entity_id   UUID         NOT NULL,
-  operation   VARCHAR(10)  NOT NULL,
+  audit_id    BIGSERIAL                NOT NULL PRIMARY KEY,
+  entity_type public.audit_entity_type NOT NULL,
+  entity_id   UUID                     NOT NULL,
+  operation   public.audit_operation   NOT NULL,
   old_values  JSONB,
   new_values  JSONB,
-  changed_by  UUID         REFERENCES public.users(user_id) ON DELETE SET NULL,
-  changed_at  TIMESTAMPTZ    DEFAULT NOW(),
+  changed_by  UUID                     REFERENCES public.users(user_id) ON DELETE SET NULL,
+  changed_at  TIMESTAMPTZ              DEFAULT NOW(),
 
-  CONSTRAINT entity_type_valid CHECK (entity_type IN ('dataset', 'dataset_version', 'experiment', 'run', 'permission')),
-  CONSTRAINT operation_valid   CHECK (operation IN ('INSERT', 'UPDATE', 'DELETE')),
   CONSTRAINT new_values_required_for_insert CHECK (operation != 'INSERT' OR new_values IS NOT NULL),
   CONSTRAINT old_values_required_for_delete CHECK (operation != 'DELETE' OR old_values IS NOT NULL)
 );

@@ -2,17 +2,19 @@
 -- SECTION F: RUNS & EXECUTION
 -- ============================================================================
 
+CREATE TYPE run.run_status AS ENUM ('queued', 'running', 'succeeded', 'failed', 'cancelled');
+CREATE TYPE run.log_level  AS ENUM ('DEBUG', 'INFO', 'WARN', 'ERROR');
+
 CREATE TABLE run.runs (
-  run_id        UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-  experiment_id UUID        NOT NULL REFERENCES exp.experiments(experiment_id)    ON DELETE RESTRICT,
-  cluster_id    UUID        NOT NULL REFERENCES run.compute_clusters(cluster_id)  ON DELETE RESTRICT,
-  status        VARCHAR(50) NOT NULL DEFAULT 'queued',
-  created_at    TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
+  run_id        UUID           PRIMARY KEY DEFAULT gen_random_uuid(),
+  experiment_id UUID           NOT NULL REFERENCES exp.experiments(experiment_id)    ON DELETE RESTRICT,
+  cluster_id    UUID           NOT NULL REFERENCES run.compute_clusters(cluster_id)  ON DELETE RESTRICT,
+  status        run.run_status NOT NULL DEFAULT 'queued',
+  created_at    TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
   started_at    TIMESTAMPTZ,
   ended_at      TIMESTAMPTZ,
-  created_by    UUID        REFERENCES public.users(user_id) ON DELETE SET NULL,
+  created_by    UUID           REFERENCES public.users(user_id) ON DELETE SET NULL,
 
-  CONSTRAINT status_valid          CHECK (status IN ('queued', 'running', 'succeeded', 'failed', 'cancelled')),
   CONSTRAINT started_after_created CHECK (started_at IS NULL OR started_at >= created_at),
   CONSTRAINT ended_after_started   CHECK (ended_at IS NULL OR (started_at IS NOT NULL AND ended_at >= started_at))
 );
@@ -27,10 +29,9 @@ CREATE TABLE run.run_logs (
   log_id      UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
   run_id      UUID        NOT NULL REFERENCES run.runs(run_id) ON DELETE CASCADE,
   log_message TEXT        NOT NULL,
-  log_level   VARCHAR(20) DEFAULT 'INFO',
+  log_level   run.log_level NOT NULL DEFAULT 'INFO',
   created_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
 
-  CONSTRAINT log_level_valid       CHECK (log_level IN ('DEBUG', 'INFO', 'WARN', 'ERROR')),
   CONSTRAINT log_message_not_empty CHECK (log_message != '')
 );
 

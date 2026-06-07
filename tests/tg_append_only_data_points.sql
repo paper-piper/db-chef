@@ -24,7 +24,7 @@ INSERT INTO ds.datasets (dataset_id, org_id, dataset_key, created_by) VALUES
 
 INSERT INTO ds.dataset_versions (version_id, dataset_id, version_number, schema_definition, created_by) VALUES
   ('99dd0001-0000-0000-0000-000000000000', '99cc0001-0000-0000-0000-000000000000',
-   1, '{"fields": [{"name": "x", "type": "int"}]}', '99aa0001-0000-0000-0000-000000000000');
+   1, '{"x": "number"}', '99aa0001-0000-0000-0000-000000000000');
 
 INSERT INTO ds.dataset_data_points (data_point_id, version_id, data_payload, created_by) VALUES
   ('99ee0001-0000-0000-0000-000000000000', '99dd0001-0000-0000-0000-000000000000',
