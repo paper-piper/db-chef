@@ -52,15 +52,17 @@ Files are named `<major>.<minor>.<patch>_<description>.sql`. The major version g
 | `1.0.0_orgs_users.sql` | Organizations, users, memberships |
 | `1.1.0_roles_access.sql` | Access policies, roles, role↔policy and user↔role assignments |
 | `2.0.0_datasets.sql` | Datasets, versions, data points |
-| `2.1.0_experiments.sql` | Experiments, dataset refs, parameters |
+| `2.1.0_data_point_payload_validation.sql` | Payload schema validation trigger on dataset_data_points |
+| `2.2.0_experiments.sql` | Experiments, dataset refs, parameters |
+| `2.3.0_ref_order_trigger.sql` | Ref-order auto-normalization trigger on experiment_data_ver_refs |
 | `3.0.0_compute_clusters.sql` | Compute clusters |
 | `3.1.0_runs.sql` | Runs, logs, output artifacts |
 | `4.0.0_audit_log.sql` | Tamper-evident audit log table |
 | `4.1.0_audit_triggers.sql` | Audit triggers + append-only guards |
-| `5.0.0_views.sql` | Analytical views |
+| `5.x.0_v_*.sql` | Analytical views |
 | `6.0.0_seed_data.sql` | Sample data for development |
 
-New migrations slot in naturally — e.g. `2.2.0_dataset_tags.sql` extends datasets, `3.1.1_runs_fix.sql` patches runs.
+New migrations slot in naturally — e.g. `2.4.0_dataset_tags.sql` extends datasets, `3.1.1_runs_fix.sql` patches runs.
 
 ---
 
