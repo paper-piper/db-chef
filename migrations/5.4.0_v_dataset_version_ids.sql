@@ -27,6 +27,8 @@ LANGUAGE plpgsql AS $$
 DECLARE
   v_cols text;
 BEGIN
+  PERFORM set_config('client_min_messages', 'warning', true);
+
   -- One column per dataset; each cell picks the nth version via OFFSET.
   SELECT string_agg(
     format(
@@ -83,4 +85,4 @@ CREATE TRIGGER tg_dataset_version_ids_refresh_on_datasets
 
 -- ─── Initial build ────────────────────────────────────────────────────────────
 
-SELECT public.fn_build_dataset_version_ids();
+DO $$ BEGIN PERFORM public.fn_build_dataset_version_ids(); END $$;

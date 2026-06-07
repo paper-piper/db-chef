@@ -5,7 +5,7 @@
 -- Interesting cases deliberately included:
 --   • Users belonging to multiple orgs     (Bob, Carol, Eve)
 --   • Users holding multiple roles         (Alice, Dave)
---   • Multi-dataset experiments            (exp 2, exp 3, exp 7)
+--   • Multi-dataset experiments            (exp 2, exp 3, exp 5)
 --   • Deep version lineage (3 levels)      (customer-churn-signals v1→v2→v3)
 --   • Mix of run statuses per experiment
 -- ============================================================================

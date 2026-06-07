@@ -21,6 +21,8 @@ LANGUAGE plpgsql AS $$
 DECLARE
   v_cols text;
 BEGIN
+  PERFORM set_config('client_min_messages', 'warning', true);
+
   -- One column per version. The WITH RECURSIVE lineage CTE is baked into the
   -- view body so it runs once per query, not once per column.
   SELECT string_agg(
@@ -74,4 +76,4 @@ CREATE TRIGGER tg_version_ancestry_pivot_refresh
 
 -- ─── Initial build ────────────────────────────────────────────────────────────
 
-SELECT public.fn_build_version_ancestry_pivot();
+DO $$ BEGIN PERFORM public.fn_build_version_ancestry_pivot(); END $$;
