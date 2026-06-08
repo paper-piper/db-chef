@@ -1,6 +1,6 @@
 -- ============================================================================
 -- Trigger: tg_audit_experiments
--- Verifies INSERT / UPDATE / DELETE on exp.experiments each write to audit_log.
+-- Verifies INSERT / UPDATE / DELETE on experiments.experiments each write to audit_log.
 -- Note: no runs are attached, so the experiment DELETE is not blocked by RESTRICT.
 --
 -- Expected output after each action: 1 audit row with the correct fields.
@@ -16,12 +16,12 @@ SET LOCAL app.current_user_id = '99aa0005-0000-0000-0000-000000000000';
 INSERT INTO public.users (user_id, name, email) VALUES
   ('99aa0005-0000-0000-0000-000000000000', 'Trigger Tester', 'trigger5@test.io');
 
-INSERT INTO orgs.organizations (org_id, org_name) VALUES
+INSERT INTO organisations.organizations (org_id, org_name) VALUES
   ('99bb0005-0000-0000-0000-000000000000', 'Test Org');
 
 -- ─── Test: INSERT ─────────────────────────────────────────────────────────────
 
-INSERT INTO exp.experiments (experiment_id, org_id, experiment_name, created_by) VALUES
+INSERT INTO experiments.experiments (experiment_id, org_id, experiment_name, created_by) VALUES
   ('99cc0005-0000-0000-0000-000000000000', '99bb0005-0000-0000-0000-000000000000',
    'Audit Test Experiment', '99aa0005-0000-0000-0000-000000000000');
 
@@ -37,7 +37,7 @@ ORDER BY audit_id;
 
 -- ─── Test: UPDATE ─────────────────────────────────────────────────────────────
 
-UPDATE exp.experiments
+UPDATE experiments.experiments
   SET experiment_name = 'Audit Test Experiment (v2)'
   WHERE experiment_id = '99cc0005-0000-0000-0000-000000000000';
 
@@ -52,7 +52,7 @@ ORDER BY audit_id DESC LIMIT 1;
 
 -- ─── Test: DELETE ─────────────────────────────────────────────────────────────
 
-DELETE FROM exp.experiments
+DELETE FROM experiments.experiments
   WHERE experiment_id = '99cc0005-0000-0000-0000-000000000000';
 
 SELECT operation,

@@ -1,6 +1,6 @@
 -- ============================================================================
 -- Trigger: tg_audit_datasets
--- Verifies INSERT / UPDATE / DELETE on ds.datasets each write to audit_log.
+-- Verifies INSERT / UPDATE / DELETE on datasets.datasets each write to audit_log.
 --
 -- Expected output after each action: 1 audit row with the correct fields.
 -- Full trail at the end: 3 rows in order INSERT → UPDATE → DELETE.
@@ -15,12 +15,12 @@ SET LOCAL app.current_user_id = '99aa0003-0000-0000-0000-000000000000';
 INSERT INTO public.users (user_id, name, email) VALUES
   ('99aa0003-0000-0000-0000-000000000000', 'Trigger Tester', 'trigger3@test.io');
 
-INSERT INTO orgs.organizations (org_id, org_name) VALUES
+INSERT INTO organisations.organizations (org_id, org_name) VALUES
   ('99bb0003-0000-0000-0000-000000000000', 'Test Org');
 
 -- ─── Test: INSERT ─────────────────────────────────────────────────────────────
 
-INSERT INTO ds.datasets (dataset_id, org_id, dataset_key, created_by) VALUES
+INSERT INTO datasets.datasets (dataset_id, org_id, dataset_key, created_by) VALUES
   ('99cc0003-0000-0000-0000-000000000000', '99bb0003-0000-0000-0000-000000000000',
    'audit-test-dataset', '99aa0003-0000-0000-0000-000000000000');
 
@@ -36,7 +36,7 @@ ORDER BY audit_id;
 
 -- ─── Test: UPDATE ─────────────────────────────────────────────────────────────
 
-UPDATE ds.datasets
+UPDATE datasets.datasets
   SET dataset_key = 'audit-test-dataset-renamed'
   WHERE dataset_id = '99cc0003-0000-0000-0000-000000000000';
 
@@ -51,7 +51,7 @@ ORDER BY audit_id DESC LIMIT 1;
 
 -- ─── Test: DELETE ─────────────────────────────────────────────────────────────
 
-DELETE FROM ds.datasets
+DELETE FROM datasets.datasets
   WHERE dataset_id = '99cc0003-0000-0000-0000-000000000000';
 
 SELECT operation,

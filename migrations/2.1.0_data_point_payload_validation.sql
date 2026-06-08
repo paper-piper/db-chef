@@ -1,7 +1,7 @@
 -- ============================================================================
 -- DATA POINT PAYLOAD VALIDATION
 -- Ensures data_payload keys and types match the version's schema_definition
--- on every INSERT into ds.dataset_data_points.
+-- on every INSERT into datasets.dataset_data_points.
 --
 -- schema_definition format: { "field_name": "<jsonb_type>", ... }
 -- Valid types: string, number, boolean, object, array, null
@@ -12,7 +12,7 @@
 --   3. data_payload must not contain fields absent from schema_definition.
 -- ============================================================================
 
-CREATE OR REPLACE FUNCTION ds.validate_data_point_payload()
+CREATE OR REPLACE FUNCTION datasets.validate_data_point_payload()
 RETURNS TRIGGER AS $$
 DECLARE
   v_schema   JSONB;
@@ -21,7 +21,7 @@ DECLARE
   v_actual   TEXT;
 BEGIN
   SELECT schema_definition INTO v_schema
-  FROM ds.dataset_versions
+  FROM datasets.dataset_versions
   WHERE version_id = NEW.version_id;
 
   FOR v_field, v_expected IN SELECT key, value FROM jsonb_each_text(v_schema) LOOP
@@ -46,5 +46,5 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER tg_validate_data_point_payload
-  BEFORE INSERT ON ds.dataset_data_points
-  FOR EACH ROW EXECUTE FUNCTION ds.validate_data_point_payload();
+  BEFORE INSERT ON datasets.dataset_data_points
+  FOR EACH ROW EXECUTE FUNCTION datasets.validate_data_point_payload();

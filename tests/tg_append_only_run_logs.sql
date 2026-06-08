@@ -15,10 +15,10 @@ BEGIN;
 INSERT INTO public.users (user_id, name, email) VALUES
   ('99aa0002-0000-0000-0000-000000000000', 'Trigger Tester', 'trigger2@test.io');
 
-INSERT INTO orgs.organizations (org_id, org_name) VALUES
+INSERT INTO organisations.organizations (org_id, org_name) VALUES
   ('99bb0002-0000-0000-0000-000000000000', 'Test Org');
 
-INSERT INTO exp.experiments (experiment_id, org_id, experiment_name, created_by) VALUES
+INSERT INTO experiments.experiments (experiment_id, org_id, experiment_name, created_by) VALUES
   ('99cc0002-0000-0000-0000-000000000000', '99bb0002-0000-0000-0000-000000000000',
    'Test Experiment', '99aa0002-0000-0000-0000-000000000000');
 

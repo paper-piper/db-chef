@@ -19,8 +19,8 @@ SELECT
   cc.disk_tb,
   cc.network_bandwidth_mbps
 FROM run.runs r
-INNER JOIN exp.experiments      e  ON r.experiment_id      = e.experiment_id
+INNER JOIN experiments.experiments      e  ON r.experiment_id      = e.experiment_id
 INNER JOIN run.compute_clusters cc ON r.cluster_id         = cc.cluster_id
-LEFT  JOIN ds.dataset_versions  dv ON r.dataset_version_id = dv.version_id
-LEFT  JOIN ds.datasets          d  ON dv.dataset_id        = d.dataset_id
+LEFT  JOIN datasets.dataset_versions  dv ON r.dataset_version_id = dv.version_id
+LEFT  JOIN datasets.datasets          d  ON dv.dataset_id        = d.dataset_id
 ORDER BY r.created_at DESC;

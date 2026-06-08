@@ -47,7 +47,7 @@ FROM public.v_version_ancestry_pivot;
 -- ─── Trigger: INSERT a child version adds its column ─────────────────────────
 -- New v4 under customer-churn-signals (ee000001), child of v3 (ff000003).
 
-INSERT INTO ds.dataset_versions
+INSERT INTO datasets.dataset_versions
   (version_id, dataset_id, version_number, schema_definition, parent_version_id, created_by) VALUES
   ('ff0000a4-0000-0000-0000-000000000000', 'ee000001-0000-0000-0000-000000000000',
    4, '{"fields": [{"name": "x", "type": "int"}]}',
@@ -66,7 +66,7 @@ FROM public.v_version_ancestry_pivot;
 
 -- ─── Trigger: DELETE the version removes its column (DROP + CREATE) ───────────
 
-DELETE FROM ds.dataset_versions
+DELETE FROM datasets.dataset_versions
   WHERE version_id = 'ff0000a4-0000-0000-0000-000000000000';
 
 SELECT count(*) AS column_count_after_delete

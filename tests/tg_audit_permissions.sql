@@ -1,6 +1,6 @@
 -- ============================================================================
 -- Trigger: tg_audit_permissions
--- Verifies INSERT / DELETE on orgs.user_role_assignments write to audit_log.
+-- Verifies INSERT / DELETE on organisations.user_role_assignments write to audit_log.
 -- entity_id is user_id (not a surrogate PK) — this is intentional per the
 -- trigger definition, as user_id is the most useful audit query axis.
 --
@@ -18,15 +18,15 @@ INSERT INTO public.users (user_id, name, email) VALUES
   ('99aa0007-0000-0000-0000-000000000000', 'Admin Tester',  'admin7@test.io'),
   ('99aa0008-0000-0000-0000-000000000000', 'Target User',   'user7@test.io');
 
-INSERT INTO orgs.organizations (org_id, org_name) VALUES
+INSERT INTO organisations.organizations (org_id, org_name) VALUES
   ('99bb0007-0000-0000-0000-000000000000', 'Test Org');
 
-INSERT INTO orgs.roles (role_id, org_id, role_name) VALUES
+INSERT INTO organisations.roles (role_id, org_id, role_name) VALUES
   ('99cc0007-0000-0000-0000-000000000000', '99bb0007-0000-0000-0000-000000000000', 'Analyst');
 
 -- ─── Test: INSERT (grant role) ───────────────────────────────────────────────
 
-INSERT INTO orgs.user_role_assignments (user_id, role_id, org_id) VALUES
+INSERT INTO organisations.user_role_assignments (user_id, role_id, org_id) VALUES
   ('99aa0008-0000-0000-0000-000000000000',
    '99cc0007-0000-0000-0000-000000000000',
    '99bb0007-0000-0000-0000-000000000000');
@@ -45,7 +45,7 @@ ORDER BY audit_id;
 
 -- ─── Test: DELETE (revoke role) ──────────────────────────────────────────────
 
-DELETE FROM orgs.user_role_assignments
+DELETE FROM organisations.user_role_assignments
   WHERE user_id = '99aa0008-0000-0000-0000-000000000000'
     AND role_id = '99cc0007-0000-0000-0000-000000000000'
     AND org_id  = '99bb0007-0000-0000-0000-000000000000';

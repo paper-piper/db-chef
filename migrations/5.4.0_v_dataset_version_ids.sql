@@ -15,7 +15,7 @@
 --
 -- Cannot be a static view — column list grows with every new dataset.
 -- A builder function regenerates it via dynamic SQL, and statement-level
--- triggers on ds.datasets and ds.dataset_versions keep it current.
+-- triggers on datasets.datasets and datasets.dataset_versions keep it current.
 -- ============================================================================
 
 
@@ -29,18 +29,17 @@ DECLARE
 BEGIN
   PERFORM set_config('client_min_messages', 'warning', true);
 
-  -- One column per dataset; each cell picks the nth version via OFFSET.
+  -- One column per dataset. Versions are pre-ranked inside a CTE; the pivot
+  -- uses conditional aggregates over a single scan instead of one correlated
+  -- subquery per dataset per row.
   SELECT string_agg(
     format(
-      'COALESCE('
-      || '  (SELECT version_id::text FROM ds.dataset_versions '
-      || '   WHERE dataset_id = %L ORDER BY version_number LIMIT 1 OFFSET (n.i - 1)),'
-      || '  ''-'') AS %I',
+      'COALESCE(MIN(version_id) FILTER (WHERE dataset_id = %L), ''-'') AS %I',
       dataset_id, dataset_id::text),
     E',\n  '
     ORDER BY dataset_key)
   INTO v_cols
-  FROM ds.datasets;
+  FROM datasets.datasets;
 
   EXECUTE 'DROP VIEW IF EXISTS public.v_dataset_version_ids';
 
@@ -52,11 +51,19 @@ BEGIN
     -- view is empty (rather than a row of all '-').
     EXECUTE format(
       'CREATE VIEW public.v_dataset_version_ids AS '
+      || 'WITH ranked AS ('
+      || '  SELECT dataset_id, version_id::text AS version_id,'
+      || '    ROW_NUMBER() OVER (PARTITION BY dataset_id ORDER BY version_number) AS rn'
+      || '  FROM datasets.dataset_versions'
+      || ') '
       || 'SELECT %s '
       || 'FROM generate_series(1, ('
       || '  SELECT COALESCE(MAX(cnt), 0)::int '
-      || '  FROM (SELECT COUNT(*)::int AS cnt FROM ds.dataset_versions GROUP BY dataset_id) t'
-      || ')) AS n(i)',
+      || '  FROM (SELECT COUNT(*)::int AS cnt FROM datasets.dataset_versions GROUP BY dataset_id) t'
+      || ')) AS n(i) '
+      || 'LEFT JOIN ranked ON ranked.rn = n.i '
+      || 'GROUP BY n.i '
+      || 'ORDER BY n.i',
       v_cols);
   END IF;
 END;
@@ -75,11 +82,11 @@ END;
 $$;
 
 CREATE TRIGGER tg_dataset_version_ids_refresh_on_versions
-  AFTER INSERT OR UPDATE OR DELETE ON ds.dataset_versions
+  AFTER INSERT OR UPDATE OR DELETE ON datasets.dataset_versions
   FOR EACH STATEMENT EXECUTE FUNCTION public.fn_dataset_version_ids_refresh();
 
 CREATE TRIGGER tg_dataset_version_ids_refresh_on_datasets
-  AFTER INSERT OR UPDATE OR DELETE ON ds.datasets
+  AFTER INSERT OR UPDATE OR DELETE ON datasets.datasets
   FOR EACH STATEMENT EXECUTE FUNCTION public.fn_dataset_version_ids_refresh();
 
 

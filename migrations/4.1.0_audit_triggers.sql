@@ -4,7 +4,7 @@
 
 -- ─── Append-Only Guard ────────────────────────────────────────────────────────
 -- Blocks UPDATE and DELETE on tables that must be immutable after insert.
--- Covers: ds.dataset_data_points (§1.2) and run.run_logs (§1.4).
+-- Covers: datasets.dataset_data_points (§1.2) and run.run_logs (§1.4).
 
 CREATE OR REPLACE FUNCTION public.fn_append_only()
 RETURNS TRIGGER
@@ -17,7 +17,7 @@ END;
 $$;
 
 CREATE TRIGGER tg_dataset_data_points_append_only
-  BEFORE UPDATE OR DELETE ON ds.dataset_data_points
+  BEFORE UPDATE OR DELETE ON datasets.dataset_data_points
   FOR EACH ROW EXECUTE FUNCTION public.fn_append_only();
 
 CREATE TRIGGER tg_run_logs_append_only
@@ -81,19 +81,19 @@ $$;
 
 -- ─── Audit Triggers ───────────────────────────────────────────────────────────
 
--- ds.datasets
+-- datasets.datasets
 CREATE TRIGGER tg_audit_datasets
-  AFTER INSERT OR UPDATE OR DELETE ON ds.datasets
+  AFTER INSERT OR UPDATE OR DELETE ON datasets.datasets
   FOR EACH ROW EXECUTE FUNCTION public.fn_audit_log('dataset', 'dataset_id');
 
--- ds.dataset_versions
+-- datasets.dataset_versions
 CREATE TRIGGER tg_audit_dataset_versions
-  AFTER INSERT OR UPDATE OR DELETE ON ds.dataset_versions
+  AFTER INSERT OR UPDATE OR DELETE ON datasets.dataset_versions
   FOR EACH ROW EXECUTE FUNCTION public.fn_audit_log('dataset_version', 'version_id');
 
--- exp.experiments
+-- experiments.experiments
 CREATE TRIGGER tg_audit_experiments
-  AFTER INSERT OR UPDATE OR DELETE ON exp.experiments
+  AFTER INSERT OR UPDATE OR DELETE ON experiments.experiments
   FOR EACH ROW EXECUTE FUNCTION public.fn_audit_log('experiment', 'experiment_id');
 
 -- run.runs
@@ -101,9 +101,9 @@ CREATE TRIGGER tg_audit_runs
   AFTER INSERT OR UPDATE OR DELETE ON run.runs
   FOR EACH ROW EXECUTE FUNCTION public.fn_audit_log('run', 'run_id');
 
--- orgs.user_role_assignments (permissions)
+-- organisations.user_role_assignments (permissions)
 -- Composite PK (user_id, role_id, org_id) — user_id is used as entity_id
 -- because it is the most meaningful query axis for permission audits.
 CREATE TRIGGER tg_audit_permissions
-  AFTER INSERT OR UPDATE OR DELETE ON orgs.user_role_assignments
+  AFTER INSERT OR UPDATE OR DELETE ON organisations.user_role_assignments
   FOR EACH ROW EXECUTE FUNCTION public.fn_audit_log('permission', 'user_id');

@@ -9,7 +9,7 @@ DO $$
 DECLARE
   r RECORD;
 BEGIN
-  -- Drop every non-system schema (covers orgs, ds, exp, run, and any future ones)
+  -- Drop every non-system schema (covers organisations, datasets, experiments, run, and any future ones)
   FOR r IN
     SELECT schema_name
     FROM information_schema.schemata

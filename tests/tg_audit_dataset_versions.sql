@@ -1,6 +1,6 @@
 -- ============================================================================
 -- Trigger: tg_audit_dataset_versions
--- Verifies INSERT / UPDATE / DELETE on ds.dataset_versions each write to audit_log.
+-- Verifies INSERT / UPDATE / DELETE on datasets.dataset_versions each write to audit_log.
 -- Note: no data_points are attached, so the version DELETE is not blocked.
 --
 -- Expected output after each action: 1 audit row with the correct fields.
@@ -16,16 +16,16 @@ SET LOCAL app.current_user_id = '99aa0004-0000-0000-0000-000000000000';
 INSERT INTO public.users (user_id, name, email) VALUES
   ('99aa0004-0000-0000-0000-000000000000', 'Trigger Tester', 'trigger4@test.io');
 
-INSERT INTO orgs.organizations (org_id, org_name) VALUES
+INSERT INTO organisations.organizations (org_id, org_name) VALUES
   ('99bb0004-0000-0000-0000-000000000000', 'Test Org');
 
-INSERT INTO ds.datasets (dataset_id, org_id, dataset_key, created_by) VALUES
+INSERT INTO datasets.datasets (dataset_id, org_id, dataset_key, created_by) VALUES
   ('99cc0004-0000-0000-0000-000000000000', '99bb0004-0000-0000-0000-000000000000',
    'version-audit-ds', '99aa0004-0000-0000-0000-000000000000');
 
 -- ─── Test: INSERT ─────────────────────────────────────────────────────────────
 
-INSERT INTO ds.dataset_versions
+INSERT INTO datasets.dataset_versions
   (version_id, dataset_id, version_number, description, schema_definition, created_by) VALUES
   ('99dd0004-0000-0000-0000-000000000000', '99cc0004-0000-0000-0000-000000000000',
    1, 'Initial version', '{"fields": [{"name": "x", "type": "int"}]}',
@@ -43,7 +43,7 @@ ORDER BY audit_id;
 
 -- ─── Test: UPDATE ─────────────────────────────────────────────────────────────
 
-UPDATE ds.dataset_versions
+UPDATE datasets.dataset_versions
   SET description = 'Revised version'
   WHERE version_id = '99dd0004-0000-0000-0000-000000000000';
 
@@ -58,7 +58,7 @@ ORDER BY audit_id DESC LIMIT 1;
 
 -- ─── Test: DELETE ─────────────────────────────────────────────────────────────
 
-DELETE FROM ds.dataset_versions
+DELETE FROM datasets.dataset_versions
   WHERE version_id = '99dd0004-0000-0000-0000-000000000000';
 
 SELECT operation,

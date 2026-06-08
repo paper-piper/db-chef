@@ -13,7 +13,7 @@
 
 -- ─── Organizations ────────────────────────────────────────────────────────────
 
-INSERT INTO orgs.organizations (org_id, org_name) VALUES
+INSERT INTO organisations.organizations (org_id, org_name) VALUES
   ('aa000001-0000-0000-0000-000000000000', 'Acme Research'),
   ('aa000002-0000-0000-0000-000000000000', 'Bright Labs'),
   ('aa000003-0000-0000-0000-000000000000', 'Quantum Analytics');
@@ -33,7 +33,7 @@ INSERT INTO public.users (user_id, name, email) VALUES
 
 -- ─── Memberships  (multi-org users: Bob, Carol, Eve) ─────────────────────────
 
-INSERT INTO orgs.user_org_memberships (user_id, org_id) VALUES
+INSERT INTO organisations.user_org_memberships (user_id, org_id) VALUES
   ('bb000001-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000'), -- Alice  → Acme
   ('bb000002-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000'), -- Bob    → Acme
   ('bb000002-0000-0000-0000-000000000000', 'aa000003-0000-0000-0000-000000000000'), -- Bob    → Quantum
@@ -48,7 +48,7 @@ INSERT INTO orgs.user_org_memberships (user_id, org_id) VALUES
 
 -- ─── Roles ───────────────────────────────────────────────────────────────────
 
-INSERT INTO orgs.roles (role_id, org_id, role_name) VALUES
+INSERT INTO organisations.roles (role_id, org_id, role_name) VALUES
   -- Acme
   ('cc000001-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000', 'Acme Admin'),
   ('cc000002-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000', 'Acme Researcher'),
@@ -65,7 +65,7 @@ INSERT INTO orgs.roles (role_id, org_id, role_name) VALUES
 
 -- ─── User → Role assignments  (multi-role users: Alice, Dave) ─────────────────
 
-INSERT INTO orgs.user_role_assignments (user_id, role_id, org_id) VALUES
+INSERT INTO organisations.user_role_assignments (user_id, role_id, org_id) VALUES
   -- Alice: Admin AND Researcher at Acme (two roles, same org)
   ('bb000001-0000-0000-0000-000000000000', 'cc000001-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000'),
   ('bb000001-0000-0000-0000-000000000000', 'cc000002-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000'),
@@ -99,7 +99,7 @@ INSERT INTO run.compute_clusters (cluster_id, cluster_name, region, ip_address, 
 
 -- ─── Datasets ─────────────────────────────────────────────────────────────────
 
-INSERT INTO ds.datasets (dataset_id, org_id, dataset_key, created_by) VALUES
+INSERT INTO datasets.datasets (dataset_id, org_id, dataset_key, created_by) VALUES
   -- Acme
   ('ee000001-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000', 'customer-churn-signals',          'bb000001-0000-0000-0000-000000000000'),
   ('ee000002-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000', 'product-clickstream',             'bb000002-0000-0000-0000-000000000000'),
@@ -116,7 +116,7 @@ INSERT INTO ds.datasets (dataset_id, org_id, dataset_key, created_by) VALUES
 -- ─── Dataset Versions ─────────────────────────────────────────────────────────
 -- customer-churn-signals: 3-level deep lineage (v1 → v2 → v3)
 
-INSERT INTO ds.dataset_versions (version_id, dataset_id, version_number, description, schema_definition, parent_version_id, created_by) VALUES
+INSERT INTO datasets.dataset_versions (version_id, dataset_id, version_number, description, schema_definition, parent_version_id, created_by) VALUES
 
   -- customer-churn-signals v1 (root)
   ('ff000001-0000-0000-0000-000000000000', 'ee000001-0000-0000-0000-000000000000', 1,
@@ -193,7 +193,7 @@ INSERT INTO ds.dataset_versions (version_id, dataset_id, version_number, descrip
 
 -- ─── Dataset Data Points ──────────────────────────────────────────────────────
 
-INSERT INTO ds.dataset_data_points (version_id, data_payload, created_by) VALUES
+INSERT INTO datasets.dataset_data_points (version_id, data_payload, created_by) VALUES
   -- churn v1
   ('ff000001-0000-0000-0000-000000000000', '{"customer_id": "c-001", "churn_label": true,  "tenure_days": 45}',  'bb000001-0000-0000-0000-000000000000'),
   ('ff000001-0000-0000-0000-000000000000', '{"customer_id": "c-002", "churn_label": false, "tenure_days": 320}', 'bb000001-0000-0000-0000-000000000000'),
@@ -242,7 +242,7 @@ INSERT INTO ds.dataset_data_points (version_id, data_payload, created_by) VALUES
 
 -- ─── Experiments ──────────────────────────────────────────────────────────────
 
-INSERT INTO exp.experiments (experiment_id, org_id, experiment_name, created_by) VALUES
+INSERT INTO experiments.experiments (experiment_id, org_id, experiment_name, created_by) VALUES
   -- Acme
   ('11000001-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000', 'Churn XGBoost Baseline',             'bb000001-0000-0000-0000-000000000000'),
   ('11000002-0000-0000-0000-000000000000', 'aa000001-0000-0000-0000-000000000000', 'Churn XGBoost + NPS Feature',        'bb000002-0000-0000-0000-000000000000'),
@@ -258,7 +258,7 @@ INSERT INTO exp.experiments (experiment_id, org_id, experiment_name, created_by)
 
 -- ─── Experiment → Dataset refs ────────────────────────────────────────────────
 
-INSERT INTO exp.experiment_data_ver_refs (experiment_id, dataset_version_id, ref_order) VALUES
+INSERT INTO experiments.experiment_data_ver_refs (experiment_id, dataset_version_id, ref_order) VALUES
   -- Baseline: churn v1 only
   ('11000001-0000-0000-0000-000000000000', 'ff000001-0000-0000-0000-000000000000', 1),
   -- NPS: churn v2 + clickstream v2
@@ -282,7 +282,7 @@ INSERT INTO exp.experiment_data_ver_refs (experiment_id, dataset_version_id, ref
 
 -- ─── Experiment Parameters ────────────────────────────────────────────────────
 
-INSERT INTO exp.experiment_parameters (experiment_id, param_key, param_type, param_value) VALUES
+INSERT INTO experiments.experiment_parameters (experiment_id, param_key, param_type, param_value) VALUES
   ('11000001-0000-0000-0000-000000000000', 'n_estimators',          'int',    '100'),
   ('11000001-0000-0000-0000-000000000000', 'max_depth',             'int',    '6'),
   ('11000001-0000-0000-0000-000000000000', 'learning_rate',         'float',  '0.1'),
