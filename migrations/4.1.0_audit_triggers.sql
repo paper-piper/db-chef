@@ -84,7 +84,7 @@ $$;
 -- datasets.datasets
 CREATE TRIGGER tg_audit_datasets
   AFTER INSERT OR UPDATE OR DELETE ON datasets.datasets
-  FOR EACH ROW EXECUTE FUNCTION public.fn_audit_log('dataset', 'dataset_id');
+  FOR EACH ROW EXECUTE FUNCTION public.fn_audit_log('dataset', 'id');
 
 -- datasets.dataset_versions
 CREATE TRIGGER tg_audit_dataset_versions
@@ -94,16 +94,16 @@ CREATE TRIGGER tg_audit_dataset_versions
 -- experiments.experiments
 CREATE TRIGGER tg_audit_experiments
   AFTER INSERT OR UPDATE OR DELETE ON experiments.experiments
-  FOR EACH ROW EXECUTE FUNCTION public.fn_audit_log('experiment', 'experiment_id');
+  FOR EACH ROW EXECUTE FUNCTION public.fn_audit_log('experiment', 'id');
 
 -- run.runs
 CREATE TRIGGER tg_audit_runs
   AFTER INSERT OR UPDATE OR DELETE ON run.runs
-  FOR EACH ROW EXECUTE FUNCTION public.fn_audit_log('run', 'run_id');
+  FOR EACH ROW EXECUTE FUNCTION public.fn_audit_log('run', 'id');
 
--- organisations.user_role_assignments (permissions)
+-- organizations.user_role_assignments (permissions)
 -- Composite PK (user_id, role_id, org_id) — user_id is used as entity_id
 -- because it is the most meaningful query axis for permission audits.
 CREATE TRIGGER tg_audit_permissions
-  AFTER INSERT OR UPDATE OR DELETE ON organisations.user_role_assignments
+  AFTER INSERT OR UPDATE OR DELETE ON organizations.user_role_assignments
   FOR EACH ROW EXECUTE FUNCTION public.fn_audit_log('permission', 'user_id');

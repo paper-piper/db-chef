@@ -35,7 +35,7 @@ BEGIN
   SELECT string_agg(
     format(
       'COALESCE(MIN(version_id) FILTER (WHERE dataset_id = %L), ''-'') AS %I',
-      dataset_id, dataset_id::text),
+      id, id::text),
     E',\n  '
     ORDER BY dataset_key)
   INTO v_cols

@@ -6,13 +6,13 @@ CREATE TYPE public.audit_entity_type AS ENUM ('dataset', 'dataset_version', 'exp
 CREATE TYPE public.audit_operation   AS ENUM ('INSERT', 'UPDATE', 'DELETE');
 
 CREATE TABLE public.audit_log (
-  audit_id    BIGSERIAL                NOT NULL PRIMARY KEY,
+  id          BIGSERIAL                NOT NULL PRIMARY KEY,
   entity_type public.audit_entity_type NOT NULL,
   entity_id   UUID                     NOT NULL,
   operation   public.audit_operation   NOT NULL,
   old_values  JSONB,
   new_values  JSONB,
-  changed_by  UUID                     REFERENCES public.users(user_id) ON DELETE SET NULL,
+  changed_by  UUID                     REFERENCES public.users(id) ON DELETE SET NULL,
   changed_at  TIMESTAMPTZ              DEFAULT NOW(),
 
   CONSTRAINT new_values_required_for_insert CHECK (operation != 'INSERT' OR new_values IS NOT NULL),
